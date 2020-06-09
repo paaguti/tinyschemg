@@ -26,5 +26,13 @@ struct fileinfo {
 	uid_t		fi_uid;
 	gid_t		fi_gid;
 	mode_t		fi_mode;
+#ifdef LIBBSD_OVERLAY
+	__time_t	fi_mtime;	/* Last modified time */
+#else
 	struct timespec	fi_mtime;	/* Last modified time */
+#endif
 };
+
+#ifdef LIBBSD_OVERLAY
+#define __dead
+#endif

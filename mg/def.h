@@ -414,6 +414,8 @@ int		 popbuftop(struct buffer *, int);
 int		 getbufcwd(char *, size_t);
 int		 checkdirty(struct buffer *);
 
+int      pipe_to_buffer(struct buffer *, FILE *);
+
 /* display.c */
 int		vtresize(int, int, int);
 void		vtinit(void);

@@ -23,7 +23,11 @@
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
-#include <util.h>
+#ifdef __linux__
+# include <bsd/libutil.h>
+#else
+# include <util.h>
+#endif
 
 #include "def.h"
 

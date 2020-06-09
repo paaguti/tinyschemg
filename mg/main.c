@@ -72,13 +72,17 @@ main(int argc, char **argv)
 	 */
 	{
 		extern void grep_init(void);
+#ifndef NOTHEO
 		extern void theo_init(void);
+#endif
 		extern void cmode_init(void);
 		extern void dired_init(void);
 
 		dired_init();
 		grep_init();
+#ifndef NOTHEO
 		theo_init();
+#endif
 		cmode_init();
 	}
 
@@ -102,7 +106,7 @@ main(int argc, char **argv)
 	if ((cp = startupfile(NULL)) != NULL)
 		(void)load(cp);
 
-	/* 
+	/*
 	 * Now ensure any default buffer modes from the startup file are
 	 * given to any files opened when parsing the startup file.
 	 * Note *scratch* will also be updated.
@@ -227,7 +231,9 @@ quit(int f, int n)
 	if (s == FALSE
 	    || eyesno("Modified buffers exist; really exit") == TRUE) {
 		vttidy();
+#ifndef NOTAGS
 		closetags();
+#endif
 		exit(GOOD);
 	}
 	return (TRUE);

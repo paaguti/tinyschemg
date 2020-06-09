@@ -195,8 +195,10 @@ compile_mode(const char *name, const char *command)
 {
 	struct buffer	*bp;
 	FILE	*fpipe;
+#if 0
 	char	*buf;
 	size_t	 len;
+#endif
 	int	 ret, n;
 	char	 cwd[NFILEN], qcmd[NFILEN];
 	char	 timestr[NTIME];
@@ -226,15 +228,14 @@ compile_mode(const char *name, const char *command)
 		ewprintf("Problem opening pipe");
 		return (NULL);
 	}
-	/*
-	 * We know that our commands are nice and the last line will end with
-	 * a \n, so we don't need to try to deal with the last line problem
-	 * in fgetln.
-	 */
+#if 0
 	while ((buf = fgetln(fpipe, &len)) != NULL) {
 		buf[len - 1] = '\0';
 		addline(bp, buf);
 	}
+#else
+	ret = pipe_to_buffer(bp, fpipe);
+#endif
 	ret = pclose(fpipe);
 	t = time(NULL);
 	strftime(timestr, sizeof(timestr), "%a %b %e %T %Y", localtime(&t));

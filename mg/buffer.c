@@ -686,7 +686,7 @@ popbuf(struct buffer *bp, int flags)
 	struct mgwin	*wp;
 
 	if (bp->b_nwnd == 0) {	/* Not on screen yet.	 */
-		/* 
+		/*
 		 * Pick a window for a pop-up.
 		 * If only one window, split the screen.
 		 * Flag the new window as ephemeral
@@ -698,7 +698,7 @@ popbuf(struct buffer *bp, int flags)
 		/*
 		 * Pick the uppermost window that isn't
 		 * the current window. An LRU algorithm
-		 * might be better. Return a pointer, or NULL on error. 
+		 * might be better. Return a pointer, or NULL on error.
 		 */
 		wp = wheadp;
 
@@ -849,7 +849,7 @@ int
 checkdirty(struct buffer *bp)
 {
 	int s;
-	
+
 	if ((bp->b_flag & (BFDIRTY | BFIGNDIRTY)) == BFDIRTY) {
 		if ((s = eyorn("File changed on disk; really edit the buffer"))
 		    != TRUE)
@@ -860,4 +860,33 @@ checkdirty(struct buffer *bp)
 
 	return (TRUE);
 }
-	
+
+
+int
+pipe_to_buffer(struct buffer *bp, FILE *fp)
+{
+	/*
+	 * We know that our commands are nice and the last line will end with
+	 * a \n, so we don't need to try to deal with the last line problem
+	 * in fgetln.
+	 */
+#ifndef LIBBSD_OVERLAY
+	char	*buf;
+	int     len;
+
+	while ((buf = fgetln(fpipe, &len)) != NULL) {
+		buf[len - 1] = '\0';
+		addline(bp, buf);
+	}
+#else
+	char    *lineb = calloc(2*NLINE,sizeof(char));
+	size_t   linecap = 0;
+	ssize_t  linelen;
+	while ((linelen = getline(&lineb, &linecap, fp)) > 0) {
+		lineb[linelen] = '\0';
+		addline(bp, lineb);
+	}
+	free(lineb);
+#endif
+	return TRUE;
+}

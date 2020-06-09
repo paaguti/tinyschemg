@@ -64,7 +64,11 @@ ffstat(FILE *ffp, struct buffer *bp)
 		bp->b_fi.fi_mode = sb.st_mode | 0x8000;
 		bp->b_fi.fi_uid = sb.st_uid;
 		bp->b_fi.fi_gid = sb.st_gid;
+#ifdef LIBBSD_OVERLAY
+		bp->b_fi.fi_mtime = sb.st_mtime;
+#else
 		bp->b_fi.fi_mtime = sb.st_mtimespec;
+#endif
 		/* Clear the ignore flag */
 		bp->b_flag &= ~(BFIGNDIRTY | BFDIRTY);
 	}
@@ -571,11 +575,14 @@ fchecktime(struct buffer *bp)
 
 	if (stat(bp->b_fname, &sb) == -1)
 		return (TRUE);
-
+#ifdef LIBBSD_OVERLAY
+	if (bp->b_fi.fi_mtime != sb.st_mtime)
+		return (FALSE);
+#else
 	if (bp->b_fi.fi_mtime.tv_sec != sb.st_mtimespec.tv_sec ||
 	    bp->b_fi.fi_mtime.tv_nsec != sb.st_mtimespec.tv_nsec)
 		return (FALSE);
-
+#endif
 	return (TRUE);
 
 }
