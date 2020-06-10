@@ -1,7 +1,7 @@
 tinyschemg
 ===========
 
-Tinyschemg, a working repository for mg(1) and tinyscheme.
+Tinyschemg, a working repository for mg(1) and tinyscheme. Being ported to Linux...
 
 branches
 --------
